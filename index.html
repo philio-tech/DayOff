@@ -1,0 +1,190 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<meta charset="utf-8" />
+<title>辰豐同仁休假查詢</title>
+</head>
+     <script language="JavaScript">
+        window.onload = function() {
+         var _nDate = new Date();
+         var year = _nDate.getFullYear();
+         document.getElementById("選年")[0].text = (year-1911) + "年";
+         document.getElementById("選年")[1].text = (year-1912) + "年";
+       } 
+    </script>                                             
+    <script type="text/javascript">
+    
+     //--當點選姓名欄位時，『查詢』的按鈕就會開啟--//
+      function EnableBtn(){
+     var n = document.getElementById("姓名");
+     var p = document.getElementById("密碼");
+      if (n.value !=="" && p.value !=="") {
+       document.form1.查詢假單.disabled = false;}
+      else {
+       document.form1.查詢假單.disabled = true;} 
+     }
+     
+     //--顯示或隱藏密碼欄位--//
+        function ShowPwd(){
+        var p = document.getElementById("密碼");
+        if (p.type === "password") {
+          p.type = "text";}
+        else {
+          p.type = "password";}
+     }
+     
+     //--查詢同仁所有休假資料--//
+     function Inq(){
+       var _aDate = new Date();
+       var thisyear = _aDate.getFullYear();
+       if(document.getElementById("選年").value=="今年"){
+         thisyear = thisyear - 1911;
+        }else{
+         thisyear = thisyear - 1912;
+        }  
+       var text1 ="<table width ='990' border='1' cellspacing='0' cellpadding='1'>";
+       var text2 ="<table width ='990' border='1' cellspacing='0' cellpadding='1'>";
+       var parameter = {
+            "Username": document.getElementById("姓名").value,
+            "year": thisyear,
+            "password": document.getElementById("密碼").value,
+            "method": document.getElementById("假單查詢").value
+           };
+
+       $.get("https://script.google.com/macros/s/AKfycbx9FZrXAIONYb-wkvgPOShW0bto7jPia8BKwEdYfACm0o-2SsZ5RhzZD0jWCEgC236kow/exec", parameter,
+          function(data){
+            var d = data.split(',');  //把傳出來的字串分割成陣列
+            var arr = [];
+            var dLen = data.length;
+            for( var i = 0 ;i < dLen ; i++){
+               arr[i] = d.splice(0,1);
+            }     
+            //window.alert(data);
+            if(data == '此帳號不存在於資料庫列表中!'){
+               document.getElementById("標題").innerHTML = text1;
+               document.getElementById("內容").innerHTML = text2; 
+               setTimeout(function(){ alert(data); }, 600);
+            }
+            else if(data == '帳號與密碼不符!'){
+               document.getElementById("標題").innerHTML = text1;
+               document.getElementById("內容").innerHTML = text2; 
+               setTimeout(function(){ alert(data); }, 600);
+            }
+            else{      //--帳號密碼符合後，查詢休假資料--//
+             for (i = 0; i < 16; i++) {
+                text1 += "<td colspan='3'>" + arr[i] + "</td>";
+                if(i - 7 == 0){
+                text1 += "<tr>";
+                }
+              }
+              text1 += "</tr>";
+              document.getElementById("標題").innerHTML = text1; 
+             
+              menu = ["假別", "事由", "日期", "時", "分", "至", "日期", "時", "分", "天", "時"];
+              mLength = menu.length;
+              for(i = 0; i < mLength; i++){
+                text2 += "<td width='90'>" + menu[i] + "</td>";
+              } 
+              text2 += "<tr>";
+               
+              for(i = 16; i <= dLen; i++){
+                 text2 += "<td><input type='text' style='width:90px;font-size:14px;color:blue' disabled value="+arr[i]+"></td>";
+                 if((i-4) % 11 == 0){
+                 text2 += "<tr>";
+                 }
+              }
+              text2 += "</tr></table>";
+              document.getElementById("內容").innerHTML = text2; 
+            }  
+          });
+     }      
+     
+    </script>
+    <body>
+    <form id="form1" name="form1" method="post" action="">   
+     <table width="990" border=1 cellspacing=2 cellpadding=3> 
+      <tr>
+         <td colspan="11">
+           <p align="center"><font size="6"><b>辰豐同仁休假記錄查詢</b></font></p>
+           <p align="left">
+           <b>姓名:</b> &nbsp
+           <select name="姓名" id="姓名" onclick="EnableBtn()" style="width:86px;height:21px;font-weight:bold">
+             <option value=''></option>
+             <option value="test">test</option>     
+             <optgroup label="採購組">
+               <option value="謝燕齡">謝燕齡</option>
+               <option value="黃玉如">黃玉如</option>
+             <optgroup label="文管">  
+               <option value="李佩營">李佩營</option>
+             <optgroup label="生管"> 
+               <option value="楊惠喬">楊惠喬</option>
+             <optgroup label="品保組">
+               <option value="許峰嘉">許峰嘉</option>
+               <option value="謝政勳">謝政勳</option>
+               <option value="林柔妤">林柔妤</option>
+               <option value="廖宜家">廖宜家</option>
+             <optgroup label="生產組">
+               <option value="高維均">高維均</option>
+               <option value="陳煥東">陳煥東</option>
+               <option value="林靖騰">林靖騰</option>
+               <option value="呂紹民">呂紹民</option>
+               <option value="蕭有成">蕭有成</option>
+             <optgroup label="產線人員">
+               <option value="林秀丹">林秀丹</option>
+               <option value="陳錦慧">陳錦慧</option>
+               <option value="鄒愛倫">鄒愛倫</option>
+               <option value="林家祺">林家祺</option>
+               <option value="陳惠美">陳惠美</option>
+               <option value="陳嬿惠">陳嬿惠</option>
+             <optgroup label="安規">
+               <option value="邱美麗">邱美麗</option> 
+             <optgroup label="軟體組">
+               <option value="楊嘉慶">楊嘉慶</option>
+               <option value="留琬如">留琬如</option>
+               <option value="施元智">施元智</option>
+               <option value="盧宥任">盧宥任</option>
+               <option value="吳銘哲">吳銘哲</option>
+               <option value="張維中">張維中</option>
+               <option value="林郁豐">林郁豐</option>
+             <optgroup label="硬體組">
+               <option value="姚文成">姚文成</option>
+               <option value="陳柏旭">陳柏旭</option>
+               <option value="張俊聲">張俊聲</option>
+               <option value="蔡俊逸">蔡俊逸</option>
+             <optgroup label="機構組">
+               <option value="陳清文">陳清文</option>
+               <option value="陳凱修">陳凱修</option>
+             <optgroup label="業務組">
+               <option value="陳雅婷">陳雅婷</option>
+               <option value="胡芸瑄">胡芸瑄</option>
+               <option value="林怡妙">林怡妙</option> 
+             <optgroup label="行政部">
+               <option value="趙梅芬">趙梅芬</option>
+               <option value="林月輝">林月輝</option>
+               <option value="嚴鴻毅">嚴鴻毅</option>      
+           </select> &nbsp&nbsp&nbsp
+             密碼:<input type="password" name="密碼" id="密碼" onkeyup="EnableBtn()" style="width:100px;font-weight:bold"> &nbsp
+                  <input type="checkbox" onclick="javascript:{ShowPwd()}">顯示密碼 &nbsp&nbsp&nbsp&nbsp 
+                  
+                  <select name="選年" id="選年">
+                    <option value="今年"></option>                
+                    <option value="去年"></option>
+                  </select>&nbsp&nbsp&nbsp               				
+                  
+                  <input name="查詢假單" type="button" id="假單查詢" value="查詢" disabled onclick="javascript:{Inq()}"></p>
+          </td>
+        </tr>
+      
+        <tr>
+          <td>
+            <span id="標題"></span>
+            <span id="內容"></span>
+          </td>  
+        </tr>
+            
+       </table>    
+     </form>       
+  </body>
+</html>
+
